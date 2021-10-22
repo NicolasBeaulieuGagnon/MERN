@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import CreateMessage from "./CreateMessage";
+import Message from "./Message";
 
-function App() {
+const App = () => {
+  const [update, setUpdate] = useState(false);
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    fetch("/posts").then((res) => {
+      res.json().then(({ data }) => {
+        setMessages(data.reverse());
+      });
+    });
+  }, [update]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <CreateMessage update={update} setUpdate={setUpdate} />
+      {messages.length > 0 &&
+        messages.map((message) => {
+          return <Message key={message._id} message={message.message} />;
+        })}
     </div>
   );
-}
+};
 
 export default App;
